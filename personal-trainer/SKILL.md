@@ -61,7 +61,7 @@ don't hunt for alternatives. Reads are cacheable and may return a stale snapshot
 | Tool | Use it for | Key params |
 |------|-----------|-----------|
 | `get_status` | Is the bridge reachable? auth state, Watch reachability, data staleness. Call first in any data pull. | — |
-| `get_metrics` | Health metrics over a window, bucketed. Sleep returns **stage intervals**; quantities return **hour/day averages or sums** (not raw samples). | `types[]`, `start`, `end`, `interval` (`hour`\|`day`) |
+| `get_metrics` | Health metrics over a window, bucketed. Sleep returns **stage intervals**; quantities return **hour/day averages or sums** (not raw samples). See the signal catalog below for the `types[]` values. | `types[]`, `start`, `end`, `interval` (`hour`\|`day`) |
 | `get_workouts` | Completed workouts: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, split (lap) boundaries. No per-sample HR series. | `start`, `end` |
 | `get_reconciliation` | Planned-vs-actual for scheduled sessions (status: pending/completed/missed + matched workout). | `start`, `end` |
 | `get_feedback` | Athlete's own notes on a session (free text, optional photo). | `id?`, `start?`, `end?` |
@@ -74,6 +74,39 @@ don't hunt for alternatives. Reads are cacheable and may return a stale snapshot
 `get_workouts` by matching date and activity. If `get_feedback` is unavailable, ask the
 client follow-up questions during the weekly review instead.
 
+### `get_metrics` signal catalog (pass these exact strings in `types[]`)
+
+Quantities land in `samples[]` (per-bucket avg/sum); sleep & menstrual logs in
+`categorySamples[]` (decoded `valueLabel`, not aggregated); mood in `stateOfMind[]`.
+Omit `types[]` to get the full set. Completed workouts come from `get_workouts`, not here.
+
+| `types[]` identifier | Signal | Agg |
+|---|---|---|
+| `HKQuantityTypeIdentifierHeartRateVariabilitySDNN` | HRV (SDNN), ms | avg |
+| `HKQuantityTypeIdentifierRestingHeartRate` | Resting HR, bpm | avg |
+| `HKQuantityTypeIdentifierRespiratoryRate` | Respiratory rate, br/min | avg |
+| `HKQuantityTypeIdentifierAppleSleepingWristTemperature` | Sleeping wrist temp, °C | avg |
+| `HKQuantityTypeIdentifierOxygenSaturation` | Blood oxygen (SpO₂), % | avg |
+| `HKCategoryTypeIdentifierSleepAnalysis` | Sleep stages (intervals) | — |
+| `HKQuantityTypeIdentifierVO2Max` | VO₂ max, mL/kg·min | avg |
+| `HKQuantityTypeIdentifierHeartRateRecoveryOneMinute` | 1-min HR recovery, bpm | avg |
+| `HKQuantityTypeIdentifierWalkingHeartRateAverage` | Walking HR avg, bpm | avg |
+| `HKQuantityTypeIdentifierHeartRate` | Heart rate, bpm | avg |
+| `HKQuantityTypeIdentifierActiveEnergyBurned` | Active energy, kcal | sum |
+| `HKQuantityTypeIdentifierDistanceWalkingRunning` | Walk+run distance, m | sum |
+| `HKQuantityTypeIdentifierRunningPower` | Running power, W | avg |
+| `HKQuantityTypeIdentifierRunningSpeed` | Running speed, m/s | avg |
+| `HKQuantityTypeIdentifierRunningStrideLength` | Stride length, m | avg |
+| `HKQuantityTypeIdentifierStepCount` | Steps | sum |
+| `HKQuantityTypeIdentifierAppleExerciseTime` | Exercise time, min | sum |
+| `HKQuantityTypeIdentifierFlightsClimbed` | Flights climbed | sum |
+| `HKQuantityTypeIdentifierBodyMass` | Body mass, kg | avg |
+| `HKStateOfMindTypeIdentifier` *(opt)* | Mood: valence + emotion labels + life-context associations → `stateOfMind[]` | — |
+| `HKCategoryTypeIdentifierMenstrualFlow` *(opt)* | Menstrual flow + `isCycleStart` (infer cycle phase from cycle-start dates) | — |
+| `HKQuantityTypeIdentifierBasalBodyTemperature` *(opt)* | Basal body temp, °C | avg |
+
+*(opt)* = present only when the user logs it (iOS 18+ for mood); absence is normal, never an error.
+
 **Request discipline (keeps payloads small and respects privacy):**
 - Default to `interval=day` and an explicit `types` list for the signals you need. Pull
   `interval=hour` only to investigate a specific day.
@@ -83,11 +116,18 @@ client follow-up questions during the weekly review instead.
 **Schedule context:** use the **Calendar MCP** (`list_events`) to see the client's agenda —
 travel, deadlines, holidays — when placing the week's sessions.
 
-**Not available yet:** subjective mood (Apple State of Mind), nutrition/hydration intake,
-and menstrual/cycle tracking are **not exposed by CoachBridge**. Do not invent them and do
-not pull them from another source — these holistic pillars are gated on a future bridge
-update. Physiological stress/recovery (HRV, resting HR, respiratory rate, sleep) *is*
-available now; use that.
+**Holistic signals (available, optional).** Mood (`HKStateOfMindTypeIdentifier` —
+valence + emotion labels + life-context associations, iOS 18+) and cycle phase
+(`HKCategoryTypeIdentifierMenstrualFlow` with `isCycleStart`, plus
+`HKQuantityTypeIdentifierBasalBodyTemperature`) **are** exposed by CoachBridge — use
+them for holistic recovery/stress and cycle-aware load when the user logs them. They're
+optional, so treat absence as "not logged," not as an error. Physiological
+stress/recovery (HRV, resting HR, respiratory rate, sleep) is always available.
+
+**Not exposed.** Nutrition / hydration intake and dietary macros are **not** read by
+CoachBridge (intentionally trimmed — athletes rarely log them reliably). Do not invent
+them or pull them from another source. Per-workout effort scores (Apple Training Load
+inputs) are authorized but **not yet surfaced** by the MCP — don't rely on them.
 
 ## Privacy & data handling — hard rule
 
