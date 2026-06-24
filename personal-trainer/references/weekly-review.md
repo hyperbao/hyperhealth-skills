@@ -31,12 +31,13 @@ Use `interval=day` and explicit `types`; window = the training week under review
   and sleeping wrist temperature into one call — **low / moderate / high** physiological
   stress vs the client's baseline — and record it in the weekly log. This is an *inferred*
   read (Apple has no stress metric), so weight it alongside the athlete's feedback rather
-  than treating it as a measured score. Subjective stress (Apple State of Mind) is not
-  exposed by CoachBridge yet — don't fabricate it; note it as pending.
-- **Menstrual cycle (when exposed).** If the client tracks their cycle, use the phase (from
-  logged menstrual-flow / cycle-start dates) to contextualize readiness, energy, and injury
-  risk — track the athlete's *own* patterns rather than applying rigid rules. Not exposed by
-  CoachBridge yet; pending the bridge update.
+  than treating it as a measured score. Subjective mood (Apple State of Mind) **is**
+  available when the client logs it (iOS 18+) — if present, fold its valence/labels into
+  the stress read; if absent, note it as not logged and rely on the physiological read.
+- **Menstrual cycle.** If the client tracks their cycle, use the phase (from logged
+  menstrual-flow / cycle-start dates, plus basal body temperature when present) to
+  contextualize readiness, energy, and injury risk — track the athlete's *own* patterns
+  rather than applying rigid rules. Available from CoachBridge when logged (optional).
 - **Training load.** Weekly volume and session count; intensity distribution (easy vs hard);
   notable sessions vs the prescribed paces/HR. Compare to plan and to recent weeks — watch
   for sharp jumps.

@@ -14,7 +14,7 @@
 
 **Stress read (inferred, vs baseline):** [low / moderate / high] — basis: [HRV / RHR / sleep / wrist temp]
 
-_Subjective stress (State of Mind), nutrition & menstrual cycle: not tracked yet (pending CoachBridge support)._
+_Mood (State of Mind) & menstrual cycle: from CoachBridge when the client logs them (optional). Nutrition / hydration: not tracked (not read by CoachBridge)._
 
 ## Planned vs actual
 | Day | Planned | Actual | Status | Key metrics (HR / pace / RPE) |

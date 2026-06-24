@@ -37,8 +37,11 @@ From these, **compute and keep derived baselines only** (never raw samples):
 - current weekly volume and session count
 - recent benchmark pace/effort
 
-Subjective mood and nutrition are not available from CoachBridge yet — record them as
-"not tracked (pending bridge)" in the profile; do not gather them another way.
+Mood (Apple State of Mind) and menstrual cycle are available from CoachBridge when the
+client logs them (both optional; mood needs iOS 18+). If present, baseline them like any
+other signal and note in the profile that they're tracked; if absent, record "not logged."
+Nutrition / hydration is not read by CoachBridge — record it as "not tracked" and do not
+gather it another way.
 
 ## 3. Scaffold the journal
 

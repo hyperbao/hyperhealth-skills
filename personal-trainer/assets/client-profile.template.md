@@ -44,7 +44,8 @@ _Last updated: [YYYY-MM-DD]_
 
 ## Data sources
 - CoachBridge MCP: [connected? from get_status]
-- Mood / nutrition / menstrual cycle: not tracked yet (pending CoachBridge support)
+- Mood (State of Mind) & menstrual cycle: tracked via CoachBridge when the client logs them (optional)
+- Nutrition / hydration: not tracked (not read by CoachBridge)
 - Ad-hoc weather checks when planning outdoor sessions: [yes/no]
 
 ## Preferences & notes
