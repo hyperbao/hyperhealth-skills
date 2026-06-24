@@ -21,6 +21,14 @@ Cover these; skip what the client volunteers, follow up on what matters.
   share); typical sleep; current stress/life load.
 - **Preferences** — units (default metric), coaching tone, how often to check in; whether
   they want you to check weather ad hoc when planning outdoor sessions.
+- **Calendar / agenda** — ask how they want their personal agenda used to place sessions
+  around real life (travel, work, commitments). Offer two paths and let them choose:
+  - **Connect via MCP** — read the calendar directly with the **Calendar MCP** (e.g. Google
+    Calendar `list_events`) so you can see their agenda whenever you plan a week. Confirm the
+    MCP is connected with a quick `list_events` test; if it isn't, tell them what to enable.
+  - **Share weekly** — they tell you the coming week's constraints during each weekly review,
+    and you plan from that instead of reading the calendar.
+  Record their choice (and which calendar, if connected) in the profile's **Data sources**.
 
 ## 2. Establish baselines from data (derived only)
 
@@ -60,3 +68,26 @@ derived baselines). See `references/journal.md` for the full contract.
 
 Summarize back to the client: the goal, the starting point, and the plan's shape and first
 phase. Get their agreement before programming the first week (`references/programming.md`).
+
+## 5. Offer a recurring weekly routine
+
+Before you finish onboarding, **ask the client whether they want a recurring weekly routine**
+that automatically runs the weekly check-in — pull the week's data, interpret it, adjust the
+plan, and log the week (`references/weekly-review.md`) — so the loop keeps running without
+them having to remember to ask.
+
+- Frame it as a choice, not a default: "Want me to set up a weekly routine that reviews your
+  data and updates your plan automatically, or would you rather kick off each review yourself?"
+- If yes, agree on **day and time** (anchor it to the check-in cadence from the interview, and
+  to when the week's training is done — e.g. Sunday evening or Monday morning), then create the
+  recurring task using the **host's scheduled-task / recurring-task capability** (if the host
+  exposes one). The scheduled task should invoke this skill's weekly review. Confirm back the
+  exact schedule you set.
+- If the host has no scheduling capability, say so plainly and fall back to a standing
+  agreement: remind the client on the agreed day, and prompt them to start the review.
+- Record the outcome in `journal/client-profile.md` (the **Weekly routine** field): whether a
+  routine is set, its day/time, and the mechanism — so a future coach knows the loop is armed
+  and how to change or cancel it. Log the decision in `journal/decision-log.md`.
+
+The client can always change or cancel the routine later; treat "set up a weekly routine" and
+"change/cancel my weekly routine" as triggers to revisit this step.

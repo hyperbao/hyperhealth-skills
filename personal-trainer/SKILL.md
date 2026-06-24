@@ -33,7 +33,8 @@ holistically: training load matters, but so do sleep, recovery, stress, and life
 Before giving any advice, check for `./journal/` in the working directory.
 
 - **No `./journal/` →** this is a new client. Read `references/intake.md` and run the
-  intake workflow. It gathers goals/context and scaffolds the journal. Do not skip this.
+  intake workflow. It gathers goals/context, scaffolds the journal, and offers to set up a
+  recurring weekly routine for the check-in. Do not skip this.
 - **`./journal/` exists →** load context first. Read `journal/client-profile.md`,
   `journal/training-plan.md`, the most recent file in `journal/weekly/`, and
   `journal/decision-log.md`. Coach from that context — never advise blind.
@@ -152,6 +153,7 @@ non-running programming — schedule them as agreed structure and defer the deta
 |-------------------|------|
 | First-time setup / new client / setting or revising goals | `references/intake.md` |
 | Weekly check-in: analyze data, adjust the plan, log the week | `references/weekly-review.md` |
+| Set up / change / cancel a recurring weekly routine | `references/intake.md` (§5) |
 | Build and schedule the week's actual workouts | `references/programming.md` |
 | Journal structure, file naming, and what to write where | `references/journal.md` |
 

@@ -43,8 +43,10 @@ Use `interval=day` and explicit `types`; window = the training week under review
   notable sessions vs the prescribed paces/HR. Compare to plan and to recent weeks — watch
   for sharp jumps.
 - **Adherence.** Completed / modified / missed, read together with the feedback.
-- **Life context.** `list_events` (Calendar MCP) for the coming week — travel, deadlines,
-  holidays — to shape next week's load and placement.
+- **Life context.** For the coming week — travel, deadlines, holidays — to shape next week's
+  load and placement. Use the agenda path the client chose at intake (profile **Data sources**):
+  if the **Calendar MCP** is connected, pull `list_events`; if they opted to **share weekly**,
+  ask them for the coming week's constraints here.
 
 ## 4. Decide and adjust
 Distinguish adaptation (handling load, ready for more) from accumulating fatigue from red

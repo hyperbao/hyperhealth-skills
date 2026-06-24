@@ -5,6 +5,7 @@ _Last updated: [YYYY-MM-DD]_
 - Age / sex (if shared):
 - Units: metric
 - Coaching tone & check-in cadence:
+- Weekly routine (auto weekly review): [none / set — day & time + mechanism, e.g. "Sun 18:00, host scheduled task"]
 
 ## Goals
 - Primary goal (and why):
@@ -44,6 +45,7 @@ _Last updated: [YYYY-MM-DD]_
 
 ## Data sources
 - CoachBridge MCP: [connected? from get_status]
+- Calendar / agenda: [MCP-connected (which calendar, e.g. Google Calendar) / shared weekly at review / none]
 - Mood (State of Mind) & menstrual cycle: tracked via CoachBridge when the client logs them (optional)
 - Nutrition / hydration: not tracked (not read by CoachBridge)
 - Ad-hoc weather checks when planning outdoor sessions: [yes/no]
