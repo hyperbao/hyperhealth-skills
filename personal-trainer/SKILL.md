@@ -61,8 +61,8 @@ don't hunt for alternatives. Reads are cacheable and may return a stale snapshot
 | Tool | Use it for | Key params |
 |------|-----------|-----------|
 | `get_status` | Is the bridge reachable? auth state, Watch reachability, data staleness. Call first in any data pull. | — |
-| `get_metrics` | Health metrics over a window, bucketed. Sleep returns **stage intervals**; quantities return **hour/day averages or sums** (not raw samples). See the signal catalog below for the `types[]` values. | `types[]`, `start`, `end`, `interval` (`hour`\|`day`) |
-| `get_workouts` | Completed workouts: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, split (lap) boundaries. No per-sample HR series. | `start`, `end` |
+| `get_metrics` | Health metrics over a window. Quantities return **bucketed averages or sums** (not raw samples); sleep returns **per-night summaries** in `sleep[]`. See the signal catalog below for `types[]` values and default grains. | `types[]`, `start`, `end`, `interval` (`hour`\|`day`\|`week`, optional), `includeRawSleep` |
+| `get_workouts` | Completed workouts: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, split (lap) boundaries, and **averaged running dynamics** (power/speed/stride, runs only). No per-sample HR series. | `start`, `end` |
 | `get_reconciliation` | Planned-vs-actual for scheduled sessions (status: pending/completed/missed + matched workout). | `start`, `end` |
 | `get_feedback` | Athlete's own notes on a session (free text, optional photo). | `id?`, `start?`, `end?` |
 | `schedule_plan` | Schedule a week's sessions to Apple Watch (PRD §9 schema). **Live only.** | `sessions[]` |
@@ -76,40 +76,41 @@ client follow-up questions during the weekly review instead.
 
 ### `get_metrics` signal catalog (pass these exact strings in `types[]`)
 
-Quantities land in `samples[]` (per-bucket avg/sum); sleep & menstrual logs in
-`categorySamples[]` (decoded `valueLabel`, not aggregated); mood in `stateOfMind[]`.
-Omit `types[]` to get the full set. Completed workouts come from `get_workouts`, not here.
+Quantities land in `samples[]`; per-night **sleep summaries** in `sleep[]`; menstrual logs
+in `categorySamples[]` (decoded `valueLabel`); mood in `stateOfMind[]`. Omit `types[]` for
+the full set. **Omit `interval`** to get each metric at its default grain below (every sample
+states its own `interval`); pass `interval` (`hour`/`day`/`week`) to force one grain across
+all metrics. Running dynamics and per-workout HR come from `get_workouts`, not here.
 
-| `types[]` identifier | Signal | Agg |
-|---|---|---|
-| `HKQuantityTypeIdentifierHeartRateVariabilitySDNN` | HRV (SDNN), ms | avg |
-| `HKQuantityTypeIdentifierRestingHeartRate` | Resting HR, bpm | avg |
-| `HKQuantityTypeIdentifierRespiratoryRate` | Respiratory rate, br/min | avg |
-| `HKQuantityTypeIdentifierAppleSleepingWristTemperature` | Sleeping wrist temp, °C | avg |
-| `HKQuantityTypeIdentifierOxygenSaturation` | Blood oxygen (SpO₂), % | avg |
-| `HKCategoryTypeIdentifierSleepAnalysis` | Sleep stages (intervals) | — |
-| `HKQuantityTypeIdentifierVO2Max` | VO₂ max, mL/kg·min | avg |
-| `HKQuantityTypeIdentifierHeartRateRecoveryOneMinute` | 1-min HR recovery, bpm | avg |
-| `HKQuantityTypeIdentifierWalkingHeartRateAverage` | Walking HR avg, bpm | avg |
-| `HKQuantityTypeIdentifierHeartRate` | Heart rate, bpm | avg |
-| `HKQuantityTypeIdentifierActiveEnergyBurned` | Active energy, kcal | sum |
-| `HKQuantityTypeIdentifierDistanceWalkingRunning` | Walk+run distance, m | sum |
-| `HKQuantityTypeIdentifierRunningPower` | Running power, W | avg |
-| `HKQuantityTypeIdentifierRunningSpeed` | Running speed, m/s | avg |
-| `HKQuantityTypeIdentifierRunningStrideLength` | Stride length, m | avg |
-| `HKQuantityTypeIdentifierStepCount` | Steps | sum |
-| `HKQuantityTypeIdentifierAppleExerciseTime` | Exercise time, min | sum |
-| `HKQuantityTypeIdentifierFlightsClimbed` | Flights climbed | sum |
-| `HKQuantityTypeIdentifierBodyMass` | Body mass, kg | avg |
-| `HKStateOfMindTypeIdentifier` *(opt)* | Mood: valence + emotion labels + life-context associations → `stateOfMind[]` | — |
-| `HKCategoryTypeIdentifierMenstrualFlow` *(opt)* | Menstrual flow + `isCycleStart` (infer cycle phase from cycle-start dates) | — |
-| `HKQuantityTypeIdentifierBasalBodyTemperature` *(opt)* | Basal body temp, °C | avg |
+| `types[]` identifier | Signal | Agg | Default grain |
+|---|---|---|---|
+| `HKQuantityTypeIdentifierHeartRateVariabilitySDNN` | HRV (SDNN), ms | avg | day |
+| `HKQuantityTypeIdentifierRestingHeartRate` | Resting HR, bpm | avg | day |
+| `HKQuantityTypeIdentifierRespiratoryRate` | Respiratory rate, br/min | avg | day |
+| `HKQuantityTypeIdentifierAppleSleepingWristTemperature` | Sleeping wrist temp, °C | avg | day |
+| `HKQuantityTypeIdentifierOxygenSaturation` | Blood oxygen (SpO₂), % | avg | day |
+| `HKQuantityTypeIdentifierVO2Max` | VO₂ max, mL/kg·min | avg | week |
+| `HKQuantityTypeIdentifierHeartRateRecoveryOneMinute` | 1-min HR recovery, bpm | avg | day |
+| `HKQuantityTypeIdentifierWalkingHeartRateAverage` | Walking HR avg, bpm | avg | week |
+| `HKQuantityTypeIdentifierHeartRate` | Heart rate, bpm | avg | day |
+| `HKQuantityTypeIdentifierActiveEnergyBurned` | Active energy, kcal | sum | day |
+| `HKQuantityTypeIdentifierDistanceWalkingRunning` | Walk+run distance, m | sum | day |
+| `HKQuantityTypeIdentifierStepCount` | Steps | sum | day |
+| `HKQuantityTypeIdentifierAppleExerciseTime` | Exercise time, min | sum | day |
+| `HKQuantityTypeIdentifierFlightsClimbed` | Flights climbed | sum | day |
+| `HKQuantityTypeIdentifierBodyMass` | Body mass, kg | avg | week |
+| `HKQuantityTypeIdentifierBasalBodyTemperature` *(opt)* | Basal body temp, °C | avg | day |
+| `HKCategoryTypeIdentifierSleepAnalysis` | Sleep → per-night summary in `sleep[]` (timeInBed/asleep/deep/rem/core min, awakenings, efficiency) | — | per night |
+| `HKStateOfMindTypeIdentifier` *(opt)* | Mood: valence + emotion labels + life-context associations → `stateOfMind[]` | — | per log |
+| `HKCategoryTypeIdentifierMenstrualFlow` *(opt)* | Menstrual flow + `isCycleStart` → `categorySamples[]` (infer cycle phase from cycle-start dates) | — | per log |
 
 *(opt)* = present only when the user logs it (iOS 18+ for mood); absence is normal, never an error.
+Raw sleep stage intervals are omitted by default; pass `includeRawSleep:true` to also get them in `categorySamples[]`.
 
 **Request discipline (keeps payloads small and respects privacy):**
-- Default to `interval=day` and an explicit `types` list for the signals you need. Pull
-  `interval=hour` only to investigate a specific day.
+- Prefer **omitting `interval`** so each metric returns at its default grain (recovery→day,
+  slow markers→week), with an explicit `types` list for the signals you need. Pass
+  `interval=hour` only to investigate a specific day; an explicit `interval` overrides every metric.
 - Don't request workout routes (GPS) unless you actually need the map — they are large.
 - Trust `_cache.stale`; if data is hours old, say so before relying on it.
 

@@ -25,7 +25,8 @@ Use `interval=day` and explicit `types`; window = the training week under review
 
 - **Readiness / recovery.** HRV vs the 7–14 day baseline *range* (trend, not a single
   value). Resting HR vs baseline — sustained elevation suggests fatigue, stress, or illness.
-  Sleep: compute total asleep, % deep, % REM, and wake count from the stage intervals.
+  Sleep: read the per-night summaries in `sleep[]` (total asleep, deep/REM/core minutes,
+  awakenings, efficiency) — already rolled up, no need to sum stage intervals yourself.
   Respiratory rate / SpO2 anomalies.
 - **Stress read.** Combine HRV (vs baseline band), resting HR (vs baseline), sleep quality,
   and sleeping wrist temperature into one call — **low / moderate / high** physiological
