@@ -114,6 +114,10 @@ Raw sleep stage intervals are omitted by default; pass `includeRawSleep:true` to
   `interval=hour` only to investigate a specific day; an explicit `interval` overrides every metric.
 - Don't request workout routes (GPS) unless you actually need the map — they are large.
 - Trust `_cache.stale`; if data is hours old, say so before relying on it.
+- If a read returns `_cache.stale` with `_cache.nudgeSent: true`, the companion couldn't
+  reach the phone and has sent a "reopen the app" push. Tell the client their data will
+  refresh once they open CoachBridge, work from the stale snapshot meanwhile, and offer to
+  retry in a moment.
 
 **Schedule context:** use the **Calendar MCP** (`list_events`) to see the client's agenda —
 travel, deadlines, holidays — when placing the week's sessions.
