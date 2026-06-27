@@ -55,6 +55,10 @@ Before giving any advice, check for `./journal/` in the working directory.
   define terms, and keep it simple and encouraging; for an experienced, well-read athlete, use
   the shorthand and go deep into the physiology and trade-offs. Same decision, different depth —
   never talk down, never talk over. The client's knowledge level lives in their profile; honor it.
+  If the client asks you to change how you explain things — more detail, simpler, more or less
+  jargon — treat it as a standing preference change, not a one-off: adjust right away **and**
+  update the **Knowledge level** field in `client-profile.md` (with a line in its update log) so
+  it sticks for next session.
 - **Progressive overload + adequate recovery.** Stress, then adapt. Don't add volume and
   intensity at once.
 
