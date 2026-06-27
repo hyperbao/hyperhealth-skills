@@ -5,6 +5,7 @@ _Last updated: [YYYY-MM-DD]_
 - Age / sex (if shared):
 - Units: metric
 - Coaching tone & check-in cadence:
+- Knowledge level (how much to teach vs. talk shorthand): [beginner / intermediate / advanced — note specifics, e.g. "knows zones & RPE, new to periodization"]
 - Weekly routine (auto weekly review): [none / set — day & time + mechanism, e.g. "Sun 18:00, host scheduled task"]
 
 ## Goals

@@ -14,6 +14,13 @@ Cover these; skip what the client volunteers, follow up on what matters.
   injury history and surgeries; current niggles or limitations.
 - **Current level** — most recent race or time-trial; a typical easy-run pace; current
   weekly volume; longest recent run.
+- **Knowledge level** — how well the client understands *training itself*, separate from how
+  fit they are. Do concepts like easy/tempo/threshold, heart-rate zones, RPE, progressive
+  overload, and periodization land, or do they need explaining? Are they self-coached and
+  well-read, or new to structured training? Don't quiz them — listen to the vocabulary they use,
+  and ask a question or two as it comes up naturally while you set goals (e.g. "how familiar are
+  you with training by heart-rate zones?"). This sets how much you teach versus how much
+  shorthand you can use from here on, so record it in the profile's **Knowledge level** field.
 - **Constraints** — which days/times they can train; session-length limits; equipment and
   access (treadmill, track, gym); usual terrain and climate; regular travel or fixed
   commitments.

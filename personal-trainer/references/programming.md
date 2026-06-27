@@ -15,6 +15,7 @@ and scheduling mechanics.
       "date": "2026-06-22T07:00:00+02:00",    // ISO-8601 with offset
       "activity": "running",                   // HKWorkoutActivityType name
       "location": "outdoor",                   // "indoor" | "outdoor" (optional)
+      "note": "Threshold day — settle in, don't go out hot. 💪", // optional coach note shown in-app
       "structure": {
         "warmup":  { "goal": { "type": "time", "minutes": 10 }, "alert": { "type": "hr", "zone": 2 } },
         "blocks": [
@@ -32,6 +33,7 @@ and scheduling mechanics.
 - **goal.type:** `time` (`minutes`), `distance` (`meters`), `energy` (`kilocalories`), or `open`.
 - **alert.type:** `hr` (with `zone` 1–5), `pace` (`min`/`max` as `"m:ss"` per km), `cadence`, or `power` (`min`/`max` numeric strings).
 - `blocks[].repeat` ≥ 1; `warmup`/`cooldown`/`recovery` optional.
+- `note` (optional, per session): a coach note for the athlete — a short encouragement or an explanation of the session's purpose/intent. Shown in the app when they open the workout (not on the Watch); rides back to you on `list_scheduled`. Keep it personal and brief; omit when you have nothing to add.
 - `raceSim` (`"separate"`|`"continuous"`) exists for Hyrox-style mixed sessions but is deferred — omit unless asked.
 
 ## Process — plan, validate, execute
