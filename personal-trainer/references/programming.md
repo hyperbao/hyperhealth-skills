@@ -11,7 +11,8 @@ and scheduling mechanics.
 {
   "sessions": [
     {
-      "id": "2026-06-22-intervals",          // stable, unique; reuse for reconciliation
+      "id": "2026-06-22-intervals",          // stable, unique, date-based; reuse for reconciliation
+      "title": "W3 T1 Intervals",             // display label (Watch + app); falls back to id
       "date": "2026-06-22T07:00:00+02:00",    // ISO-8601 with offset
       "activity": "running",                   // HKWorkoutActivityType name
       "location": "outdoor",                   // "indoor" | "outdoor" (optional)
@@ -33,6 +34,7 @@ and scheduling mechanics.
 - **goal.type:** `time` (`minutes`), `distance` (`meters`), `energy` (`kilocalories`), or `open`.
 - **alert.type:** `hr` (with `zone` 1–5), `pace` (`min`/`max` as `"m:ss"` per km), `cadence`, or `power` (`min`/`max` numeric strings).
 - `blocks[].repeat` ≥ 1; `warmup`/`cooldown`/`recovery` optional.
+- `title` (optional, per session): the human-readable label the athlete sees on the Watch and in the app. Use **`W{week} T{n} {Type}`** — `week` is the training-block week number (the week index within the current plan/build), `n` is the session number within that week (1, 2, 3… in date order), and `Type` is the session type (Easy run, Intervals, Tempo, Long run, Strength…). E.g. `"W3 T2 Easy run"`. Don't put the date in the title — it's shown separately. Keep `id` date-based for reconciliation; the title is display-only and falls back to `id` when omitted.
 - `note` (optional, per session): a coach note for the athlete — a short encouragement or an explanation of the session's purpose/intent. Shown in the app when they open the workout (not on the Watch); rides back to you on `list_scheduled`. Keep it personal and brief; omit when you have nothing to add.
 - `raceSim` (`"separate"`|`"continuous"`) exists for Hyrox-style mixed sessions but is deferred — omit unless asked.
 

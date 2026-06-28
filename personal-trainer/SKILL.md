@@ -75,7 +75,7 @@ don't hunt for alternatives. Reads are cacheable and may return a stale snapshot
 | `get_workouts` | Completed workouts: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, split (lap) boundaries, and **averaged running dynamics** (power/speed/stride, runs only). No per-sample HR series. | `start`, `end` |
 | `get_reconciliation` | Planned-vs-actual for scheduled sessions (status: pending/completed/missed + matched workout). | `start`, `end` |
 | `get_feedback` | Athlete's own notes on a session (free text, optional photo). | `id?`, `start?`, `end?` |
-| `schedule_plan` | Schedule a week's sessions to Apple Watch (PRD §9 schema). Each session takes an optional `note` — a coach note (encouragement / session explanation) shown to the athlete in the app, not pushed to the Watch. **Live only.** | `sessions[]` (each with optional `note`) |
+| `schedule_plan` | Schedule a week's sessions to Apple Watch (PRD §9 schema). Each session takes an optional `title` — the display label shown on the Watch and in the app, format `W{week} T{n} {Type}` (e.g. `"W3 T2 Easy run"`); falls back to `id`. Each also takes an optional `note` — a coach note (encouragement / session explanation) shown to the athlete in the app, not pushed to the Watch. **Live only.** | `sessions[]` (each with optional `title`, `note`) |
 | `list_scheduled` | Sessions currently scheduled on the device. **Live only.** | — |
 | `remove_scheduled` | Remove a scheduled session by id. **Live only.** | `id` |
 
