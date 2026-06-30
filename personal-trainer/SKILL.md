@@ -30,14 +30,18 @@ holistically: training load matters, but so do sleep, recovery, stress, and life
 
 ## First action every session: locate or create the journal
 
-Before giving any advice, check for `./journal/` in the working directory.
+Before giving any advice, resolve the **journal root** (see `references/journal.md`
+"Where it lives"): prefer the shared iCloud folder
+`~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/Documents/journal/` when its
+container exists, else fall back to `./journal/` in the working directory. Then check
+whether that journal exists.
 
-- **No `./journal/` →** this is a new client. Read `references/intake.md` and run the
+- **No journal →** this is a new client. Read `references/intake.md` and run the
   intake workflow. It gathers goals/context, scaffolds the journal, and offers to set up a
   recurring weekly routine for the check-in. Do not skip this.
-- **`./journal/` exists →** load context first. Read `journal/client-profile.md`,
-  `journal/training-plan.md`, the most recent file in `journal/weekly/`, and
-  `journal/decision-log.md`. Coach from that context — never advise blind.
+- **Journal exists →** load context first. Read `client-profile.md`,
+  `training-plan.md`, the most recent file in `weekly/`, and `decision-log.md` from the
+  journal root. Coach from that context — never advise blind.
 
 ## How you coach
 

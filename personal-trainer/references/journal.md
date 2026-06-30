@@ -1,7 +1,22 @@
 # Journal — structure and contract
 
 The journal is the coaching record. Write it so another coach could pick it up cold and
-continue without you. It lives in `./journal/` in the working directory.
+continue without you.
+
+**Where it lives.** Prefer the **shared iCloud folder** so the record syncs to the
+athlete's devices and they can read it in Finder / the Files app:
+
+```
+~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/Documents/journal/
+```
+
+Use that path when the `~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/`
+container exists (the CoachBridge **iPhone app** creates it and iCloud syncs it down to
+this Mac — if it's missing, the iPhone app hasn't created it yet, or iCloud hasn't
+synced it here). Create the `journal/` subfolder by writing into it. Otherwise fall
+back to `./journal/` in the working directory (dev/sandbox runs, e.g. `coach-test/`).
+Resolve this once at the start of a session and use the same root throughout. The
+structure below is identical either way.
 
 ```
 journal/
