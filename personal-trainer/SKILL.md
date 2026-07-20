@@ -76,12 +76,36 @@ don't hunt for alternatives. Reads are cacheable and may return a stale snapshot
 |------|-----------|-----------|
 | `get_status` | Is the bridge reachable? auth state, Watch reachability, data staleness. Call first in any data pull. | — |
 | `get_metrics` | Health metrics over a window. Quantities return **bucketed averages or sums** (not raw samples); sleep returns **per-night summaries** in `sleep[]`. See the signal catalog below for `types[]` values and default grains. | `types[]`, `start`, `end`, `interval` (`hour`\|`day`\|`week`, optional), `includeRawSleep` |
-| `get_workouts` | Completed workouts: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, split (lap) boundaries, and **averaged running dynamics** (power/speed/stride, runs only). No per-sample HR series. | `start`, `end` |
+| `get_workouts` | Completed workouts **over a window**, one summary row each: type, duration, distance, energy, avg/max HR, elevation, 1-min HR recovery, the Watch's own lap boundaries in `splits[]`, and **averaged running dynamics** (power/speed/stride, runs only). Whole-session aggregates only — for the intra-workout curve or per-km splits, drill in with `get_workout`. | `start`, `end` |
+| `get_workout` | **Detail for ONE session** (pass the `id` from `get_workouts`) — the granularity `get_workouts` lacks. Opt into bucketed time-series via `series` (keys: `hr`, `speed`, `power`, `cadence`, `stride`, `groundContact`, `verticalOscillation`, `distance`, `energy`) at `resolution` seconds (default 30); pass `splits` (`km`/`mi`/meters) for even-distance splits with per-split pace + avg HR; `heartRateRecovery` always included. GPS `route` opt-in (large). | `id` (req), `series[]`, `resolution`, `splits`, `route` |
 | `get_reconciliation` | Planned-vs-actual for scheduled sessions (status: pending/completed/missed + matched workout). | `start`, `end` |
 | `get_feedback` | Athlete's own notes on a session (free text, optional photo). | `id?`, `start?`, `end?` |
 | `schedule_plan` | Schedule a week's sessions to Apple Watch (PRD §9 schema). Each session takes an optional `title` — the display label shown on the Watch and in the app, format `W{week} T{n} {Type}` (e.g. `"W3 T2 Easy run"`); falls back to `id`. Each also takes an optional `note` — a coach note (encouragement / session explanation) shown to the athlete in the app, not pushed to the Watch. **Live only.** | `sessions[]` (each with optional `title`, `note`) |
 | `list_scheduled` | Sessions currently scheduled on the device. **Live only.** | — |
 | `remove_scheduled` | Remove a scheduled session by id. **Live only.** | `id` |
+
+**Example calls.** Timestamps are always **UTC with a `Z` suffix** (convert the client's local
+range to UTC first — never a `+02:00` offset, which gets mangled and silently collapses the
+window to ~24h).
+
+```jsonc
+// Readiness for a specific week (Mon 00:00 → Sun 23:59 local, expressed in UTC):
+get_metrics({ types: ["HKQuantityTypeIdentifierHeartRateVariabilitySDNN",
+                      "HKQuantityTypeIdentifierRestingHeartRate",
+                      "HKCategoryTypeIdentifierSleepAnalysis"],
+              start: "2026-07-12T22:00:00Z", end: "2026-07-19T22:00:00Z" })   // omit `interval` → per-metric default grain
+
+// This morning's markers only (no interval → overnight markers come back as `day`):
+get_metrics({ types: ["HKQuantityTypeIdentifierHeartRateVariabilitySDNN"],
+              start: "2026-07-19T00:00:00Z", end: "2026-07-20T00:00:00Z" })
+
+// The week's sessions (summary rows), then drill into the long run's curve + per-km splits:
+get_workouts({ start: "2026-07-12T22:00:00Z", end: "2026-07-19T22:00:00Z" })
+get_workout({ id: "<id from get_workouts>", series: ["hr","speed","power"], splits: "km" })
+```
+
+After any windowed read, confirm `_cache.paramsHonored` is `true` and the body's `window` covers
+what you asked for — if not, your dates didn't apply and you're seeing a default window.
 
 **Graceful fallback.** Some deployments expose only the six core tools. If
 `get_reconciliation` is unavailable, reconstruct planned-vs-actual from `list_scheduled` +
@@ -126,6 +150,13 @@ Raw sleep stage intervals are omitted by default; pass `includeRawSleep:true` to
   slow markers→week), with an explicit `types` list for the signals you need. Pass
   `interval=hour` only to investigate a specific day; an explicit `interval` overrides every metric.
 - Don't request workout routes (GPS) unless you actually need the map — they are large.
+- **Timestamps — always pass `start`/`end` as UTC with a `Z` suffix** (e.g. `2026-07-13T00:00:00Z`),
+  never a local offset like `+02:00`. Convert the client's local range to UTC yourself. A `+hh:mm`
+  offset can be mangled in transit, making the device silently ignore your dates and fall back to a
+  ~24h default window — the exact cause of "I asked for the week but only got the last two days."
+- **After every windowed read, verify the range actually took.** Check `_cache.paramsHonored`: if it's
+  `false` (or the body's `window` doesn't match what you requested), your `start`/`end` were NOT
+  applied — you got a default/snapshot window, not your week. Don't present it as the requested range.
 - Trust `_cache.stale`; if data is hours old, say so before relying on it.
 - If a read returns `_cache.stale` with `_cache.nudgeSent: true`, the companion couldn't
   reach the phone and has sent a "reopen the app" push. Tell the client their data will

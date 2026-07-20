@@ -9,13 +9,20 @@ file, and `journal/decision-log.md`. Know the current phase, this week's intent,
 you were watching.
 
 ## 2. Pull the week's data
-Use `interval=day` and explicit `types`; window = the training week under review.
+Use `interval=day` and explicit `types`; window = the training week under review. Pass `start`/`end`
+as **UTC with a `Z` suffix** (convert the client's local Mon 00:00 → Sun 23:59 to UTC), never a
+`+hh:mm` offset — an offset can be mangled and silently collapse the window to the last ~24h. After
+each read, confirm `_cache.paramsHonored` is `true` and the body's `window` covers the whole week;
+if not, your dates didn't apply and you're looking at a default window, not the week.
 
 - `get_status` — reachable? authorized? is data stale?
 - `get_metrics` for: HRV (SDNN), resting HR, respiratory rate, SpO2, sleep analysis,
   sleeping wrist temperature, active energy, steps/exercise time, VO2max, body mass (and
   running dynamics if relevant).
-- `get_workouts` for the week.
+- `get_workouts` for the week (summary rows). For the **key session(s)** — the long run, a
+  workout, anything that felt off — drill in with `get_workout(id, series:["hr","speed","power"],
+  splits:"km")` to see the pace/HR curve and per-km splits (did they fade? negative-split? HR drift?),
+  not just the session average.
 - `get_reconciliation` for the week → planned-vs-actual. If unavailable, build it from
   `list_scheduled` + `get_workouts` by matching date and activity.
 - `get_feedback` for the week → the athlete's own notes. If unavailable, ask the client
