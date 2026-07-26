@@ -22,7 +22,9 @@ if not, your dates didn't apply and you're looking at a default window, not the 
 - `get_workouts` for the week (summary rows). For the **key session(s)** — the long run, a
   workout, anything that felt off — drill in with `get_workout(id, series:["hr","speed","power"],
   splits:"km")` to see the pace/HR curve and per-km splits (did they fade? negative-split? HR drift?),
-  not just the session average.
+  not just the session average. That payload overflows to a `.txt` file — run
+  `scripts/analyze_workout.py <file>` (add `--best <m>` for a time-trial) for the derived
+  read instead of parsing it by hand.
 - `get_reconciliation` for the week → planned-vs-actual. If unavailable, build it from
   `list_scheduled` + `get_workouts` by matching date and activity.
 - `get_feedback` for the week → the athlete's own notes. If unavailable, ask the client

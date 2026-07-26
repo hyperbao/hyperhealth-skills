@@ -104,6 +104,14 @@ get_workouts({ start: "2026-07-12T22:00:00Z", end: "2026-07-19T22:00:00Z" })
 get_workout({ id: "<id from get_workouts>", series: ["hr","speed","power"], splits: "km" })
 ```
 
+**Analyzing a `get_workout` payload.** Its time-series overflow the tool-result limit and
+spill to a `.txt` file. Don't re-parse it by hand each time — run
+`scripts/analyze_workout.py <that-file>` for a derived read (overview · per-km splits +
+running dynamics · aerobic decoupling · HR distribution · drift-by-thirds — no raw samples,
+journal-safe). Add `--best 5000` to isolate a time-trial buried in warm-up/cool-down, and
+`--fcmax N [--rhr M]` for HR time-in-zone. Pass `splits:"km"` to `get_workout` so the
+decoupling has clean halves.
+
 After any windowed read, confirm `_cache.paramsHonored` is `true` and the body's `window` covers
 what you asked for — if not, your dates didn't apply and you're seeing a default window.
 
@@ -178,6 +186,25 @@ stress/recovery (HRV, resting HR, respiratory rate, sleep) is always available.
 CoachBridge (intentionally trimmed — athletes rarely log them reliably). Do not invent
 them or pull them from another source. Per-workout effort scores (Apple Training Load
 inputs) are authorized but **not yet surfaced** by the MCP — don't rely on them.
+
+## Available scripts
+
+Bundled helpers live in `scripts/` (paths are relative to this skill directory):
+
+- **`scripts/analyze_workout.py`** — turns a `get_workout()` payload (its time-series
+  overflow the tool-result limit and spill to a `.txt` file) into a compact **derived**
+  analysis: overview · per-km splits + running dynamics · aerobic decoupling · HR
+  distribution · drift-by-thirds. Output is small and journal-safe (no raw samples).
+
+  ```bash
+  python3 scripts/analyze_workout.py <payload.txt>                      # standard read
+  python3 scripts/analyze_workout.py <payload.txt> --best 5000          # isolate a time-trial
+  python3 scripts/analyze_workout.py <payload.txt> --fcmax 179 --rhr 48 # HR time-in-zone
+  python3 scripts/analyze_workout.py <payload.txt> --json               # structured, pipe to jq
+  ```
+
+  Run `--help` for all flags and exit codes (`0` ok, `2` bad input). Call `get_workout`
+  with `splits:"km"` so the decoupling gets clean halves. Stdlib only (Python ≥3.8).
 
 ## Privacy & data handling — hard rule
 
