@@ -31,10 +31,11 @@ _Last updated: [YYYY-MM-DD]_
 - Resting HR baseline:
 - HRV (SDNN) baseline range (7–14 day band):
 - Typical sleep (total / pattern):
+- Subjective baseline (typical check-in scores — fatigue / motivation / soreness / life load): [e.g. 2 / 1 / 2 / 3 — refresh ~monthly so "normal for them" stays current]
 
 ## Constraints
 - Weekly availability (days / times):
-- Session-length limits:
+- Session-length limits: [note if it differs by day — e.g. 60 min weekday mornings, open at the weekend]
 - Equipment & access (treadmill, track, gym):
 - Environment (terrain, climate):
 - Travel / fixed commitments:
@@ -50,6 +51,12 @@ _Last updated: [YYYY-MM-DD]_
 - Mood (State of Mind) & menstrual cycle: tracked via CoachBridge when the client logs them (optional)
 - Nutrition / hydration: not tracked (not read by CoachBridge)
 - Ad-hoc weather checks when planning outdoor sessions: [yes/no]
+
+## Sequencing rules (athlete-specific)
+Rules you've established for this athlete about what can follow what. Mirror each one into
+the `rules` block of the `ctx.json` used by `scripts/check_plan.py` — a rule that lives only
+here is a rule that gets forgotten when the week is drafted.
+- [e.g. no key run within 48h of a big lower-body session → `min_days_after_lower_body: 2`]
 
 ## Preferences & notes
 -

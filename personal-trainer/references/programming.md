@@ -1,9 +1,9 @@
 # Programming — turn intent into scheduled sessions
 
-Translate the week's intent into the CoachBridge plan schema, validate it, then schedule.
-Session *content* (paces, structures, zones) comes from the sport expert
-(**personal-trainer-running-expert** for running); this file owns the schema, validation,
-and scheduling mechanics.
+Translate the week's intent into the CoachBridge plan schema, put it through the gate, then
+schedule. Session *content* (paces, structures, zones) comes from the sport expert
+(**personal-trainer-running-expert** for running); this file owns the schema and the
+scheduling mechanics, and `references/plan-critique.md` owns the gate.
 
 ## Plan schema (CoachBridge `schedule_plan`, PRD §9)
 
@@ -38,15 +38,29 @@ and scheduling mechanics.
 - `note` (optional, per session): a coach note for the athlete — a short encouragement or an explanation of the session's purpose/intent. Shown in the app when they open the workout (not on the Watch); rides back to you on `list_scheduled`. Keep it personal and brief; omit when you have nothing to add.
 - `raceSim` (`"separate"`|`"continuous"`) exists for Hyrox-style mixed sessions but is deferred — omit unless asked.
 
-## Process — plan, validate, execute
+## Process — plan, gate, execute
 
 1. **Get content** from the sport expert: each session's structure, paces, and zones.
 2. **Build the plan JSON** for the week. Set each `date` from the client's availability
    (`client-profile.md`) and check the **Calendar MCP** (`list_events`) to avoid clashes.
    Map paces to `"m:ss"` per km; map easy-day effort to HR zones.
-3. **Validate before scheduling.** Confirm: every session has `id`, `activity`, `structure`;
-   `blocks` is non-empty; each `goal` has the field its `type` requires; `repeat` ≥ 1; pace
-   strings look like `"m:ss"`; HR `zone` is 1–5. Fix problems before sending.
+3. **Run the gate — `references/plan-critique.md`.** Non-negotiable, and it is the whole
+   reason a week gets caught before the athlete does. Two layers:
+   - **`scripts/check_plan.py`** — mechanical validation. Schema (ids, goals, repeats, pace
+     format, HR zones) *and* the things a schema can't see: hard-day spacing, quality or
+     strides too soon after a long run, lower-body strength colliding with a key run,
+     consecutive training days, session-count and volume steps, easy/hard split, and whether
+     each session fits a day and time the athlete actually has. Exit 1 means it does not
+     ship.
+   - **The critique panel** — independent critics, one per lens (execution reality,
+     progression & goal fit, injury flags, athlete fit), reconciled before scheduling.
+
+   ```bash
+   python3 scripts/check_plan.py plan.json --context ctx.json --week-start 2026-07-06
+   ```
+
+   Fix, re-run, and only move on when it's clean. Building the week forward, day by day, is
+   exactly how an impossible sequence gets written — the gate is what reads it back.
 4. **Reconcile existing.** `list_scheduled` to see what's already on the device;
    `remove_scheduled` anything you're replacing. (Both live-only — the phone must be reachable.)
 5. **Schedule.** `schedule_plan` (live-only). On error, read the message precisely
@@ -56,4 +70,5 @@ and scheduling mechanics.
 
 ## Discipline
 Schedule one week at a time — only what you'll actually review. Don't get ahead of the
-feedback loop.
+feedback loop. And never schedule a week the gate hasn't cleared: "it looked fine while I
+was writing it" is precisely the judgment the gate exists to replace.

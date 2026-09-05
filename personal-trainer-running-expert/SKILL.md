@@ -12,11 +12,12 @@ description: >-
   "design an easy run", "how hard should the long run be".
 license: Proprietary
 compatibility: >-
-  Companion to the personal-trainer skill. Provides running training content only;
-  data access, journaling, validation, and scheduling are handled by personal-trainer.
+  Companion to the personal-trainer skill. Provides running training content and session
+  sequencing only; data access, journaling, plan validation, and scheduling are handled by
+  personal-trainer.
 metadata:
   author: HyperHealth
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Running Coaching Expert
@@ -65,6 +66,44 @@ more volume at quality. When recovery is poor, downgrade quality to easy — see
 - Separate hard days with easy or rest; don't stack quality back-to-back for most athletes.
 - One long run per week; place quality where the athlete is freshest.
 - Session count and volume scale with level and time available (from the profile).
+- Count *all* the loading, not just the running. Two strength sessions plus four runs is a
+  six-session week, and the legs don't care which label a session had.
+
+## Sequencing — what a session costs, and what can follow it
+
+Most bad weeks aren't bad sessions. They're good sessions in an impossible order. Every
+session you hand over carries a **recovery cost**, and that cost is what decides the next
+day — so design the week as a sequence, not as seven independent days.
+
+| Session | Recovery cost | The next day can be | Not the next day |
+|---------|---------------|---------------------|------------------|
+| Easy / recovery | none | anything | — |
+| Easy + strides | very low | anything | — |
+| Long run < 75 min | low–moderate | easy, strength | quality |
+| Long run 75–120 min | **high** | easy, or rest | quality, **strides**, lower-body strength |
+| Long run > 120 min | very high | rest or very easy | anything with intensity |
+| Tempo / threshold | moderate–high | easy, or rest | quality |
+| VO2max intervals | high | easy, or rest | quality, strides |
+| Hills | high, strongly eccentric | easy, or rest | quality — expect DOMS at 48h |
+| Race / time-trial | very high | rest | quality for 2–3 days |
+| Lower-body strength | high and **delayed** | easy | long run, quality |
+
+Two things this table exists to stop:
+
+- **Strides are not recovery.** They're short, they feel harmless, and they are still a
+  neuromuscular effort on legs that have to push off hard. The day after a 90-minute long
+  run, an athlete cannot execute accelerations — they'll either run them badly or hurt
+  themselves. An easy run the day after a long run is *flat*: no strides, no pickups, no
+  "just a few accelerations at the end."
+- **DOMS peaks at 24–48h, not immediately.** The evening after a heavy lower-body session
+  the athlete feels fine, which is exactly why the next-day run gets scheduled. It's the
+  morning *after that* which is wrecked. Leave two clear days between lower-body strength
+  and any key run — and for an athlete who reports lasting DOMS, treat it as a hard rule.
+
+**Read the week backwards before you hand it over.** Walk it day by day, carrying fatigue
+forward: what are this athlete's legs actually like on the morning of each session, given
+everything before it? A session that's right in isolation can be impossible in sequence,
+and writing the week forward is exactly how that gets missed.
 
 ## Progression & deload
 
@@ -79,9 +118,16 @@ recovery] → cooldown 8 min easy. Hand this structure + targets to
 `personal-trainer/references/programming.md`, which builds, validates, and schedules the
 CoachBridge plan JSON. Do not build/schedule the JSON here.
 
+Hand over the **recovery cost** with the session, not just its content — that's what the
+plan gate (`personal-trainer/references/plan-critique.md`) needs to judge the order. If the
+gate comes back objecting to a placement, the fix is usually the *week*, not the session:
+move it, or downgrade it, rather than defending a session that's right on the wrong day.
+
 ## Gotchas
 
 - Easy too fast — the #1 error. Enforce by HR/pace.
+- A session that's right in isolation, on the wrong day — the #2 error, and the one that
+  makes a week unrunnable. Check what precedes it before you finalize it.
 - Don't chase paces when readiness is low; adjust the session, not the athlete.
 - Wrist HR lags on short reps — control those by pace, not HR.
 - Treadmill ≠ outdoor effort; set `location` and expect pace/effort differences.

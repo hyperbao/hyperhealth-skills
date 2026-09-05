@@ -1,7 +1,7 @@
 # Weekly review — the coaching loop
 
-The core cycle: read state → interpret → decide → program next week → log. Work the
-checklist; don't skip the logging.
+The core cycle: read state → **ask the athlete** → interpret → decide → program next week
+→ log. Work the checklist in order; don't skip the check-in and don't skip the logging.
 
 ## 1. Load context
 Read `journal/client-profile.md`, `journal/training-plan.md`, the latest `journal/weekly/`
@@ -27,23 +27,38 @@ if not, your dates didn't apply and you're looking at a default window, not the 
   read instead of parsing it by hand.
 - `get_reconciliation` for the week → planned-vs-actual. If unavailable, build it from
   `list_scheduled` + `get_workouts` by matching date and activity.
-- `get_feedback` for the week → the athlete's own notes. If unavailable, ask the client
-  how the key sessions felt (RPE, energy, anything off).
+- `get_feedback` for the week → the athlete's own notes. Read this as **coverage**: which
+  sessions they commented on, and which they left blank. The blanks are what the check-in
+  in step 3 asks about. (If the tool is unavailable, treat every session as uncovered.)
 
-## 3. Interpret
+## 3. Check in with the athlete — **gate**
+Now stop and ask. Read `references/check-in.md` and run it: the core four (fatigue,
+motivation, soreness, life load) plus specific questions built from what step 2 actually
+showed, skipping anything `get_feedback` already covers.
+
+This is a gate, not a formality. **Do not interpret, log, draft or schedule until the
+answers are in** — subjective decline shows up before the physiology moves, and a plan
+built without it is how a hard week gets stacked on an athlete who was already done.
+
+## 4. Interpret
 
 - **Readiness / recovery.** HRV vs the 7–14 day baseline *range* (trend, not a single
   value). Resting HR vs baseline — sustained elevation suggests fatigue, stress, or illness.
   Sleep: read the per-night summaries in `sleep[]` (total asleep, deep/REM/core minutes,
   awakenings, efficiency) — already rolled up, no need to sum stage intervals yourself.
   Respiratory rate / SpO2 anomalies.
+- **Subjective vs objective.** Put the check-in scores beside the markers first. Agreement is
+  a strong signal; disagreement is information, and the athlete's report wins — see
+  `references/check-in.md` ("Reading the answers"). Run its **overreaching screen** here,
+  every week, before you decide anything.
 - **Stress read.** Combine HRV (vs baseline band), resting HR (vs baseline), sleep quality,
   and sleeping wrist temperature into one call — **low / moderate / high** physiological
   stress vs the client's baseline — and record it in the weekly log. This is an *inferred*
   read (Apple has no stress metric), so weight it alongside the athlete's feedback rather
   than treating it as a measured score. Subjective mood (Apple State of Mind) **is**
   available when the client logs it (iOS 18+) — if present, fold its valence/labels into
-  the stress read; if absent, note it as not logged and rely on the physiological read.
+  the stress read; if absent, note it as not logged and rely on the physiological read plus
+  the check-in.
 - **Menstrual cycle.** If the client tracks their cycle, use the phase (from logged
   menstrual-flow / cycle-start dates, plus basal body temperature when present) to
   contextualize readiness, energy, and injury risk — track the athlete's *own* patterns
@@ -51,24 +66,28 @@ if not, your dates didn't apply and you're looking at a default window, not the 
 - **Training load.** Weekly volume and session count; intensity distribution (easy vs hard);
   notable sessions vs the prescribed paces/HR. Compare to plan and to recent weeks — watch
   for sharp jumps.
-- **Adherence.** Completed / modified / missed, read together with the feedback.
+- **Adherence.** Completed / modified / missed, read together with the feedback and the
+  check-in — *why* a session moved matters more than the fact it moved.
 - **Life context.** For the coming week — travel, deadlines, holidays — to shape next week's
   load and placement. Use the agenda path the client chose at intake (profile **Data sources**):
   if the **Calendar MCP** is connected, pull `list_events`; if they opted to **share weekly**,
-  ask them for the coming week's constraints here.
+  you already asked for the coming week's constraints in the check-in — use that answer.
 
-## 4. Decide and adjust
+## 5. Decide and adjust
 Distinguish adaptation (handling load, ready for more) from accumulating fatigue from red
 flags. Adjust next week's volume/intensity accordingly. On under-recovery or pain signals,
 back off — see the running expert's `references/load-and-injury.md`. Record the decision
 and its rationale.
 
-## 5. Program next week
+## 6. Program next week
 Hand the week's intent to `references/programming.md`, drawing session content (paces,
-structures) from the **personal-trainer-running-expert** skill.
+structures) from the **personal-trainer-running-expert** skill. The draft then goes through
+`references/plan-critique.md` — the checker plus a critique panel — **before** anything is
+scheduled. A week that hasn't passed the gate doesn't reach the Watch.
 
-## 6. Write the outputs (derived only)
-- Create `journal/weekly/<ISO-week>.md` from `assets/weekly-log.template.md`.
+## 7. Write the outputs (derived only)
+- Create `journal/weekly/<ISO-week>.md` from `assets/weekly-log.template.md`, including
+  the **Check-in** block (the four scores, marked where you inferred rather than were told).
 - Update `journal/training-plan.md` if the plan changed.
 - Append `journal/decision-log.md` with any non-trivial decisions.
 

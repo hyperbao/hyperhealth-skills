@@ -20,7 +20,7 @@ compatibility: >-
   scripts/journal_root.py; ./journal/ in the working directory is the no-iCloud fallback.
 metadata:
   author: HyperHealth
-  version: "0.1"
+  version: "0.2"
 ---
 
 # Personal Trainer
@@ -85,6 +85,14 @@ Resolve once per session and use the same root throughout. Then act on `journal 
   it sticks for next session.
 - **Progressive overload + adequate recovery.** Stress, then adapt. Don't add volume and
   intensity at once.
+- **Ask, don't infer.** The athlete won't reliably log how a session felt, and the numbers
+  won't tell you. Every weekly review opens with a real check-in — fatigue, motivation,
+  soreness, life load — and it runs *before* you interpret anything (`references/check-in.md`).
+  Motivation dropping is the earliest overtraining signal you get; it never shows up in HRV.
+- **Never ship a week you haven't read backwards.** A plan written forward, day by day, is how
+  a session lands on legs that can't do it. Every drafted week goes through the gate in
+  `references/plan-critique.md` — `scripts/check_plan.py` first, then a critique panel — before
+  `schedule_plan` is called.
 
 ## Your data access (CoachBridge MCP)
 
@@ -241,6 +249,23 @@ Bundled helpers live in `scripts/` (paths are relative to this skill directory):
   Run `--help` for all flags and exit codes (`0` ok, `2` bad input). Call `get_workout`
   with `splits:"km"` so the decoupling gets clean halves. Stdlib only (Python ≥3.8).
 
+- **`scripts/check_plan.py`** — validates a drafted `schedule_plan` payload **before** it
+  reaches the Watch. Beyond schema, it enforces the mechanics a coach re-derives (and
+  forgets) every week: hard-day spacing, quality or strides too soon after a long run,
+  lower-body strength colliding with a key run, consecutive training days, session-count and
+  volume steps, easy/hard split, and whether each session fits a day and time the athlete
+  actually has.
+
+  ```bash
+  python3 scripts/check_plan.py plan.json --context ctx.json --week-start 2026-07-06
+  python3 scripts/check_plan.py plan.json --json     # structured, for the critique panel
+  python3 scripts/check_plan.py --list-rules         # rules + current thresholds
+  ```
+
+  Exit `1` means at least one BLOCK: the week does not get scheduled until it's fixed, or the
+  block is overruled deliberately and logged. Thresholds are per-athlete via the context file
+  — see `references/plan-critique.md`. Stdlib only (Python ≥3.8).
+
 ## Privacy & data handling — hard rule
 
 **Never write raw MCP data to the journal.** Raw samples and payloads live only in the
@@ -263,8 +288,10 @@ non-running programming — schedule them as agreed structure and defer the deta
 |-------------------|------|
 | First-time setup / new client / setting or revising goals | `references/intake.md` |
 | Weekly check-in: analyze data, adjust the plan, log the week | `references/weekly-review.md` |
+| Asking the athlete how they're actually doing (part of every review) | `references/check-in.md` |
 | Set up / change / cancel a recurring weekly routine | `references/intake.md` (§5) |
 | Build and schedule the week's actual workouts | `references/programming.md` |
+| Checking a drafted week is executable, before it reaches the Watch | `references/plan-critique.md` |
 | Journal structure, file naming, and what to write where | `references/journal.md` |
 
 Templates for every journal file live in `assets/` — copy the relevant

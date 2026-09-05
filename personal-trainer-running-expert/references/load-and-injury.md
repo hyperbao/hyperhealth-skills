@@ -10,11 +10,21 @@ advice — refer to a clinician when red flags appear.
 - Avoid sharp jumps in acute load relative to what the athlete has been doing — a sudden
   big week is where injuries cluster.
 
+## Monitoring from the athlete, not just the data
+- **Ask every week.** The athlete won't reliably log how sessions felt. Falling motivation,
+  rising perceived effort at familiar paces, and legs that stay heavy past 72h all arrive
+  *before* HRV and resting HR move — the coach's check-in
+  (`personal-trainer/references/check-in.md`) is where they surface.
+- When the report and the numbers disagree, the report wins. An athlete who says they're
+  cooked is cooked, whatever the markers say.
+
 ## Monitoring from CoachBridge data
 - **Under-recovery signal:** resting HR drifting up **and** HRV trending below its baseline
   band **and** poor sleep, sustained over several days → reduce load now.
 - **Fatigue signal:** elevated HR (or RPE) for the usual pace; paces slipping at the same
   effort.
+- **Load creeping up for 3+ weeks with no deload** is a signal in itself, even when every
+  marker looks fine. Insert the down week before something forces one.
 - Read trends over days, not single readings — Apple HRV (SDNN) is sampled sporadically.
 - A single bad night isn't a red flag; a sustained pattern is.
 
