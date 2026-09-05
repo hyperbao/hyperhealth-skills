@@ -3,20 +3,30 @@
 The journal is the coaching record. Write it so another coach could pick it up cold and
 continue without you.
 
-**Where it lives.** Prefer the **shared iCloud folder** so the record syncs to the
-athlete's devices and they can read it in Finder / the Files app:
+**Where it lives.** The journal's home is the **CoachBridge iCloud Drive folder**, so the
+record syncs to the athlete's devices and they can read it in Finder / the Files app (it
+shows up as "CoachBridge"). Never hard-code its path — resolve it with
 
-```
-~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/Documents/journal/
+```bash
+python3 scripts/journal_root.py          # --json for structured output
 ```
 
-Use that path when the `~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/`
-container exists (the CoachBridge **iPhone app** creates it and iCloud syncs it down to
-this Mac — if it's missing, the iPhone app hasn't created it yet, or iCloud hasn't
-synced it here). Create the `journal/` subfolder by writing into it. Otherwise fall
-back to `./journal/` in the working directory (dev/sandbox runs, e.g. `coach-test/`).
-Resolve this once at the start of a session and use the same root throughout. The
-structure below is identical either way.
+On disk the folder is an iCloud *container* under `~/Library/Mobile Documents/`, named
+after the app's container identifier (`iCloud~<reverse-dns>~CoachBridge`). The script
+discovers it by that pattern for whichever user is running the skill and returns
+`<container>/Documents/journal` as the root. The CoachBridge **iPhone app** creates the
+container; iCloud syncs it down to the Mac.
+
+Fallback rule — `./journal/` in the working directory is used **only when iCloud Drive is
+not available on this machine** (`source: local`). If iCloud Drive is on but the
+CoachBridge folder hasn't arrived yet (`source: icloud-pending`, exit 3), do **not** fall
+back: ask the athlete to open the CoachBridge iPhone app and confirm CoachBridge is enabled
+under iCloud Drive on both devices, then re-run. Sandbox runs (e.g. `coach-test/`) opt into
+a local journal explicitly with `--local` (or `--root PATH`), never by accident.
+
+Resolve this once at the start of a session and use the same root throughout. Create the
+`journal/` folder (and `weekly/`) by writing into it. The structure below is identical
+whichever root you end up with.
 
 ```
 journal/

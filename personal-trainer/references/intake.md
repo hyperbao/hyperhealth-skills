@@ -1,7 +1,7 @@
 # Intake — first-run onboarding
 
 Goal: understand the client well enough to build a first plan, then scaffold the journal.
-Run this only when `./journal/` does not yet exist. Keep it a conversation, not an
+Run this only when the resolved journal root (`scripts/journal_root.py`) holds no journal yet. Keep it a conversation, not an
 interrogation — ask in batches, react to answers.
 
 ## 1. Interview
@@ -60,7 +60,7 @@ gather it another way.
 
 ## 3. Scaffold the journal
 
-Create `./journal/` and these files (copy from `assets/`, fill from the conversation +
+Create the journal root (from `scripts/journal_root.py`) and these files (copy from `assets/`, fill from the conversation +
 derived baselines). See `references/journal.md` for the full contract.
 
 - `journal/client-profile.md` — from `assets/client-profile.template.md`

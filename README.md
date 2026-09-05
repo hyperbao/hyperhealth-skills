@@ -20,7 +20,7 @@ List what's available without installing: append `--list`.
 
 | Skill | What it does |
 |-------|--------------|
-| `personal-trainer` | Long-term coaching: goals, training plans, weekly programming, check-ins, and progress logging. Keeps a persistent journal under `./journal/`. |
+| `personal-trainer` | Long-term coaching: goals, training plans, weekly programming, check-ins, and progress logging. Keeps a persistent journal in the shared CoachBridge iCloud Drive folder (discovered per user by `scripts/journal_root.py`; `./journal/` only when iCloud is unavailable). |
 | `personal-trainer-running-expert` | Running-specific expertise the coach draws on: paces, HR zones, session design (easy/long/tempo/intervals), and periodization. |
 
 ## Data dependency

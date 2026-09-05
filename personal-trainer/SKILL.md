@@ -6,7 +6,8 @@ description: >-
   or revising goals, building or updating a training plan, programming and scheduling
   a week of workouts, running a weekly check-in/review, analyzing health and training
   data (sleep, HRV, resting heart rate, workouts, readiness, training load), or logging
-  progress. Maintains a persistent on-disk journal under ./journal/, reads health and
+  progress. Maintains a persistent on-disk journal in the shared CoachBridge iCloud Drive
+  folder (falling back to ./journal/ only when iCloud is unavailable), reads health and
   workout data from the CoachBridge MCP, and schedules workouts to Apple Watch. Triggers
   even when the user doesn't say "coach" — e.g. "plan my training week", "how's my
   recovery", "what should I run today", "update my plan after this week". For running
@@ -14,8 +15,9 @@ description: >-
 license: Proprietary
 compatibility: >-
   Requires the CoachBridge MCP (Apple Health reads + Apple Watch workout scheduling).
-  Calendar MCP optional for schedule-aware planning. Designed for a single client and
-  creates a ./journal/ directory in the working directory.
+  Calendar MCP optional for schedule-aware planning. Designed for a single client. The
+  journal lives in the CoachBridge iCloud Drive folder, discovered per user by
+  scripts/journal_root.py; ./journal/ in the working directory is the no-iCloud fallback.
 metadata:
   author: HyperHealth
   version: "0.1"
@@ -30,11 +32,29 @@ holistically: training load matters, but so do sleep, recovery, stress, and life
 
 ## First action every session: locate or create the journal
 
-Before giving any advice, resolve the **journal root** (see `references/journal.md`
-"Where it lives"): prefer the shared iCloud folder
-`~/Library/Mobile Documents/iCloud~works~alexis~CoachBridge/Documents/journal/` when its
-container exists, else fall back to `./journal/` in the working directory. Then check
-whether that journal exists.
+Before giving any advice, resolve the **journal root** — never guess it or hard-code a path:
+
+```bash
+python3 scripts/journal_root.py          # add --json for structured output
+```
+
+It finds the CoachBridge **iCloud Drive folder** for whoever is running the skill (the
+app's container under `~/Library/Mobile Documents/`, discovered by name pattern — nothing
+user- or team-specific) and reports `source`, `root`, and whether a journal already exists
+there (see `references/journal.md` "Where it lives"). Act on `source`:
+
+- **`icloud`** → use `root`. This is the normal case.
+- **`icloud-pending`** (exit 3) → iCloud Drive is on, but the CoachBridge folder hasn't
+  synced to this Mac yet. **Do not fall back to a local journal.** Tell the athlete to open
+  the CoachBridge app on their iPhone (it creates the folder) and to check that CoachBridge
+  is enabled under iCloud Drive on both devices; re-run once the folder appears.
+- **`local`** → iCloud Drive is not available on this machine, so `root` is `./journal/` in
+  the working directory. Say so once, then coach normally.
+- **`override`** → you passed `--local` / `--root` (or `$COACHBRIDGE_JOURNAL_ROOT`). Only
+  do this when the user explicitly asks for a sandbox journal (e.g. `coach-test/`); if the
+  script notes a local `./journal` next to a resolved iCloud root, ask which one they mean.
+
+Resolve once per session and use the same root throughout. Then act on `journal exists`:
 
 - **No journal →** this is a new client. Read `references/intake.md` and run the
   intake workflow. It gathers goals/context, scaffolds the journal, and offers to set up a
@@ -190,6 +210,21 @@ inputs) are authorized but **not yet surfaced** by the MCP — don't rely on the
 ## Available scripts
 
 Bundled helpers live in `scripts/` (paths are relative to this skill directory):
+
+- **`scripts/journal_root.py`** — resolves the **journal root** for the current user (run
+  it first, every session). Discovers the CoachBridge iCloud Drive container under
+  `~/Library/Mobile Documents/` by name pattern, so it works for any user, team, or bundle
+  prefix; falls back to `./journal/` **only** when iCloud Drive is unavailable on the
+  machine, and refuses to fall back (exit `3`, `source: icloud-pending`) when iCloud is on
+  but the folder hasn't synced yet.
+
+  ```bash
+  python3 scripts/journal_root.py            # source / root / journal exists / notes
+  python3 scripts/journal_root.py --json     # structured
+  python3 scripts/journal_root.py --local    # sandbox: force ./journal (only when asked)
+  ```
+
+  Exit `0` resolved, `3` iCloud pending (no root), `2` bad input. Stdlib only (Python ≥3.8).
 
 - **`scripts/analyze_workout.py`** — turns a `get_workout()` payload (its time-series
   overflow the tool-result limit and spill to a `.txt` file) into a compact **derived**
