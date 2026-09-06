@@ -104,8 +104,10 @@ def resolve(cwd: Path, home: Path, override: str | None) -> dict:
         result.update(source="icloud-pending")
         result["notes"].append(
             "iCloud Drive is on but the CoachBridge folder hasn't synced to this Mac yet. "
-            "Open the CoachBridge app on the iPhone (it creates the folder), check that "
-            "CoachBridge is enabled under iCloud Drive on both devices, then re-run.")
+            "Open the CoachBridge app on the iPhone (it creates the folder once 'Sync with "
+            "iCloud' was chosen in its setup), check that CoachBridge is enabled under iCloud "
+            "Drive on both devices, then re-run. If the athlete chose to keep data on-device "
+            "(get_status → journal.mode 'local'), run this with --local instead.")
         return result
 
     if containers:

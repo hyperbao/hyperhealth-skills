@@ -18,7 +18,9 @@ discovers it by that pattern for whichever user is running the skill and returns
 container; iCloud syncs it down to the Mac.
 
 Fallback rule — `./journal/` in the working directory is used **only when iCloud Drive is
-not available on this machine** (`source: local`). If iCloud Drive is on but the
+not available on this machine** (`source: local`), or when the athlete opted out of iCloud
+in the iPhone app's setup — `get_status` then reports `journal.mode: "local"` and you run
+the resolver with `--local`. If iCloud Drive is on but the
 CoachBridge folder hasn't arrived yet (`source: icloud-pending`, exit 3), do **not** fall
 back: ask the athlete to open the CoachBridge iPhone app and confirm CoachBridge is enabled
 under iCloud Drive on both devices, then re-run. Sandbox runs (e.g. `coach-test/`) opt into

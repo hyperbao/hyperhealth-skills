@@ -32,27 +32,38 @@ holistically: training load matters, but so do sleep, recovery, stress, and life
 
 ## First action every session: locate or create the journal
 
-Before giving any advice, resolve the **journal root** — never guess it or hard-code a path:
+Before giving any advice, resolve the **journal root** — never guess it or hard-code a path.
+First call `get_status` and read its `journal` block: the athlete chose during the iPhone
+app's setup whether the journal syncs through iCloud (`journal.mode: "icloud"`) or stays
+on-device (`journal.mode: "local"`). Then run the resolver accordingly:
 
 ```bash
-python3 scripts/journal_root.py          # add --json for structured output
+python3 scripts/journal_root.py          # journal.mode is "icloud" (add --json for structured output)
+python3 scripts/journal_root.py --local  # journal.mode is "local": the athlete opted out of iCloud
 ```
+
+(If `get_status` is unreachable or has no `journal` block — an older companion — run the
+resolver without flags.)
 
 It finds the CoachBridge **iCloud Drive folder** for whoever is running the skill (the
 app's container under `~/Library/Mobile Documents/`, discovered by name pattern — nothing
 user- or team-specific) and reports `source`, `root`, and whether a journal already exists
 there (see `references/journal.md` "Where it lives"). Act on `source`:
 
-- **`icloud`** → use `root`. This is the normal case.
+- **`icloud`** → use `root`. This is the normal case; it should match `journal.path` from
+  `get_status` when that is set.
 - **`icloud-pending`** (exit 3) → iCloud Drive is on, but the CoachBridge folder hasn't
-  synced to this Mac yet. **Do not fall back to a local journal.** Tell the athlete to open
-  the CoachBridge app on their iPhone (it creates the folder) and to check that CoachBridge
+  synced to this Mac yet (`get_status` shows `journal.synced: false`). **Do not fall back to
+  a local journal.** Tell the athlete to open the CoachBridge app on their iPhone (it creates
+  the folder once "Sync with iCloud" was chosen in its setup) and to check that CoachBridge
   is enabled under iCloud Drive on both devices; re-run once the folder appears.
 - **`local`** → iCloud Drive is not available on this machine, so `root` is `./journal/` in
   the working directory. Say so once, then coach normally.
-- **`override`** → you passed `--local` / `--root` (or `$COACHBRIDGE_JOURNAL_ROOT`). Only
-  do this when the user explicitly asks for a sandbox journal (e.g. `coach-test/`); if the
-  script notes a local `./journal` next to a resolved iCloud root, ask which one they mean.
+- **`override`** → you passed `--local` / `--root` (or `$COACHBRIDGE_JOURNAL_ROOT`). Do
+  this when `get_status` reports `journal.mode: "local"` (the athlete keeps data on-device,
+  so `./journal/` in the working directory *is* the journal), or when the user explicitly
+  asks for a sandbox journal (e.g. `coach-test/`). If the script notes a local `./journal`
+  next to a resolved iCloud root, ask which one they mean.
 
 Resolve once per session and use the same root throughout. Then act on `journal exists`:
 
